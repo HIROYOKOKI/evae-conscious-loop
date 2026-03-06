@@ -1,6 +1,6 @@
 # EVΛƎ Conscious Loop
 
-A minimal reference implementation for **structuring AI decisions before execution**.
+A minimal reference implementation of the **EVΛƎ decision architecture** for structuring AI decisions before execution.
 
 EVΛƎ differs from traditional Explainable AI approaches. Instead of explaining a decision *after* it happens, EVΛƎ **structures the decision process itself and commits the reasoning as a trace**.
 
@@ -103,6 +103,14 @@ Application
 In other words, EVΛƎ functions as the
 
 **decision architecture layer for AI systems**.
+
+---
+
+# Live Demo
+
+[https://evae-conscious-loop.vercel.app/demo](https://evae-conscious-loop.vercel.app/demo)
+
+This public page visualizes the EVΛƎ Conscious Loop as a minimal interface for structuring AI decisions before execution.
 
 ---
 
