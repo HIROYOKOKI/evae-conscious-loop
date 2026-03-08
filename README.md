@@ -278,6 +278,9 @@ v1.0  EVΛƎ Decision OS
 Design‑by‑Transparency for AI
 
 Creator: **Hiro Yokoki**
+Founder, **Amuletplus G.K.**
 Tokyo, Japan
+
+EVΛƎ is being developed as a decision architecture framework for responsible AI systems, exploring how intent, options, decision gates, and traceability can be structurally defined before execution.
 
 For research collaboration or discussion, please connect via LinkedIn.
