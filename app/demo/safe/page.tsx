@@ -2,7 +2,22 @@ import DemoTabs from "@/components/demo/DemoTabs";
 import DemoTopBar from "@/components/demo/DemoTopBar";
 import { demoMeta, safeMock } from "@/lib/demo/mockData";
 
-export default function DemoSafePage() {
+type DemoSafePageProps = {
+  searchParams?: Promise<{
+    resolved?: string | string[];
+  }>;
+};
+
+export default async function DemoSafePage({
+  searchParams,
+}: DemoSafePageProps) {
+  const params = searchParams ? await searchParams : {};
+  const resolvedValue = Array.isArray(params?.resolved)
+    ? params.resolved[0]
+    : params?.resolved;
+
+  const isResolved = resolvedValue === "1";
+
   return (
     <main className="min-h-screen bg-[#f7f8fb] text-slate-900">
       <DemoTopBar
@@ -17,6 +32,26 @@ export default function DemoSafePage() {
       <DemoTabs activeKey="safe" />
 
       <div className="mx-auto max-w-[1440px] px-6 py-8">
+        {isResolved ? (
+          <section className="mb-6 rounded-[22px] border border-green-200 bg-green-50 px-6 py-5 shadow-[0_8px_24px_rgba(22,163,74,0.08)]">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white">
+                <ResolvedBannerIcon />
+              </div>
+
+              <div>
+                <div className="text-[17px] font-semibold text-green-800">
+                  修正が反映され、安全状態に戻りました
+                </div>
+                <p className="mt-1 text-[15px] leading-7 text-green-700">
+                  停止状態で検知された条件が修正され、再検証の結果、
+                  この判断は承認範囲内で実行可能になりました。
+                </p>
+              </div>
+            </div>
+          </section>
+        ) : null}
+
         <section className="rounded-[28px] border border-slate-200 bg-white p-10 shadow-[0_8px_30px_rgba(15,23,42,0.06)]">
           <div className="grid gap-8 lg:grid-cols-[220px_1fr]">
             <div className="flex items-start justify-center lg:justify-start">
@@ -37,7 +72,7 @@ export default function DemoSafePage() {
                 </div>
               </div>
 
-              <p className="mt-5 text-[15px] leading-8 text-slate-700">
+              <p className="mt-5 text-[16px] leading-8 text-slate-700">
                 <span className="font-semibold text-slate-900">理由:</span>{" "}
                 {safeMock.reason}
               </p>
@@ -163,7 +198,9 @@ function FlowCard({
       >
         {symbol}
       </div>
-      <div className={["text-xl font-semibold", textClass].join(" ")}>{label}</div>
+      <div className={["text-xl font-semibold", textClass].join(" ")}>
+        {label}
+      </div>
     </div>
   );
 }
@@ -202,6 +239,25 @@ function ShieldCheckIcon() {
     >
       <path d="M12 3l7 3v6c0 4.8-3.1 7.9-7 9-3.9-1.1-7-4.2-7-9V6l7-3z" />
       <path d="M8.5 12.5l2.3 2.3 4.7-5" />
+    </svg>
+  );
+}
+
+function ResolvedBannerIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-7 w-7 text-[#16a34a]"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M21 12a9 9 0 1 1-3.2-6.9" />
+      <path d="M21 5v6h-6" />
+      <path d="m21 5-9 9-3-3" />
     </svg>
   );
 }
