@@ -56,18 +56,22 @@ export default function DemoEntryPage() {
               <p className="mt-5 max-w-3xl text-[17px] leading-8 text-slate-600">
                 AIの出力ではなく、
                 <span className="font-semibold text-slate-900">
-                  決定がどう成立したか
+                  判断の成立条件と責任の所在
                 </span>
                 を見せる営業用デモです。
                 <br />
-                1分以内で「安全に動く」「危険時に止まる」「責任が追跡できる」を体験できます。
+                1分以内で、
+                <span className="font-semibold text-slate-900">
+                  安全に実行できること / 危険時に止まること / 変更と責任が追跡できること
+                </span>
+                を体験できます。
               </p>
             </div>
 
             <div className="flex flex-col gap-3 lg:min-w-[260px]">
               <Link
                 href="/demo/safe"
-                className="inline-flex items-center justify-center rounded-[20px] bg-[#111827] px-6 py-4 text-lg font-semibold text-white transition hover:opacity-95"
+                className="inline-flex items-center justify-center rounded-[20px] bg-[#0f172a] px-6 py-4 text-lg font-semibold text-white transition hover:opacity-95"
               >
                 デモを開始
               </Link>
