@@ -47,7 +47,7 @@ cat examples/basic/traces/*.json
 
 To use a real model instead of the offline mock, set `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` and run `npm run example` again.
 
-**Library install (after release):** `npm install evae-conscious-loop`. The cloned example above also runs offline.
+**Library install:** `npm install evae-conscious-loop`. The cloned example above also runs offline.
 
 ---
 
