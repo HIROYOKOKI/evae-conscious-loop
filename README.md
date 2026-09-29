@@ -252,6 +252,29 @@ The Conscious Loop is complete on its own: it produces a decision and a trace yo
 
 ---
 
+## Patent pending and commercial use
+
+**Patent pending.** The EVΛƎ Framework and related architecture are subject to pending patent applications.
+
+The software contained in this repository — EVΛƎ Conscious Loop v0.1 — is released under the MIT License. Commercial use of this MIT-licensed code is permitted under the terms of that license.
+
+The MIT-licensed repository does **not** include access to proprietary EVΛƎ commercial components, including:
+
+- Action Loop
+- Runtime enforcement and the EXECUTE / HOLD / BLOCK enforcement engine
+- EVΛƎ ARMOR
+- Enterprise approval workflows
+- Production thresholds and enterprise policy engine
+- Enterprise integration, support, and certification services
+
+Use of those proprietary components or services requires a separate commercial agreement with Amuletplus G.K.
+
+Use of the EVΛƎ name, logos, or claims of certification, endorsement, or official partnership is separate from the MIT-licensed software and may require permission from Amuletplus G.K.
+
+This notice does not modify the terms of the MIT License.
+
+---
+
 ## About
 
 **EVΛƎ (Eva)** — Design-by-Transparency for AI.
