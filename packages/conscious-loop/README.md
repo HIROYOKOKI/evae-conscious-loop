@@ -271,6 +271,8 @@ const result = await evaluateDecision({
   intent: "Send payment",
   possibilities: ["send payment", "ask human", "stop"],
   policy: {
+    id: "payments",
+    version: "1.0",
     rules: [
       {
         id: "payment-approval",
@@ -300,10 +302,17 @@ console.log(result.requirements); // ["human_approval"]
 - **HOLD** — the possibility is not prohibited, but authority, evidence, confidence, or human review is incomplete.
 - **BLOCK** — the possibility is explicitly outside the permitted decision boundary.
 
-A rule evaluation error becomes **HOLD**, not BLOCK: inability to verify permission is treated as uncertainty, not as proof of prohibition.
+Rules fail closed: a rule error becomes **BLOCK** by default. A rule may explicitly set `onError: "HOLD"` only when that uncertainty is safe to route to review. If no rule applies, the default is **HOLD**, not EXECUTE.
 
 ### Responsibility boundary
 
 EVΛƎ decides whether a possibility should become an authorized action and records why. It does **not** execute the action, sandbox the agent, restrict networks/filesystems, or provide hardware/runtime enforcement. Those controls belong downstream and can consume the EVΛƎ decision.
 
 > EVΛƎ decides. Enforcement systems enforce. Ǝ traces.
+
+
+### Authorization handoff contract
+
+For downstream enforcement, `authorization` records the policy id/version, canonical `subject` binding, issue time, optional expiry, all candidate outcomes, authority/evidence context, and requirements. An enforcement layer should execute only when `authorization.status === "EXECUTE"`, `trace.decision` matches the intended possibility, the authorization is unexpired, and the action reconstructed by the enforcer matches the recorded subject.
+
+Preference semantics are deliberate: the first non-BLOCK possibility wins. Therefore a preferred HOLD is not silently bypassed by a later EXECUTE candidate; the caller must resolve or replace the held possibility explicitly.
