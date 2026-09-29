@@ -4,7 +4,7 @@ import { describeBoundary, evaluateBoundary, explainDecision } from "./boundary.
 import { applyHooks, createTraceId, TRACE_SCHEMA_VERSION } from "./trace.js";
 import type { LoopOptions, RunInput, RunResult, Trace } from "./types.js";
 
-export const VERSION = "0.1.0";
+export const VERSION = "0.2.0";
 
 export interface ConsciousLoop {
   run(input: RunInput): Promise<RunResult>;
