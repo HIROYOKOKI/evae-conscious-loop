@@ -256,3 +256,54 @@ This notice does not modify the terms of the MIT License.
 Created by Hiro Yokoki, Founder, Amuletplus G.K. (Tokyo). For collaboration or commercial inquiries, connect via LinkedIn.
 
 MIT License.
+
+
+## v0.2 — Explicit authorization at Λ
+
+**Capability ≠ Authority.**
+
+EVΛƎ v0.2 adds an explicit pre-execution authorization decision without turning the library into an execution or sandboxing system.
+
+```ts
+import { evaluateDecision } from "evae-conscious-loop";
+
+const result = await evaluateDecision({
+  intent: "Send payment",
+  possibilities: ["send payment", "ask human", "stop"],
+  policy: {
+    rules: [
+      {
+        id: "payment-approval",
+        description: "Payment requires approval evidence",
+        appliesTo: ["send_payment"],
+        check: ({ intent, possibility }) => ({
+          decision: "HOLD",
+          reason: "Approval evidence is missing",
+          requirements: ["human_approval"],
+        }),
+      },
+    ],
+  },
+  decisionContext: {
+    authority: { actor: "agent", scope: "draft-only" },
+    evidence: { approval_id: null },
+  },
+});
+
+console.log(result.decision); // "HOLD"
+console.log(result.requirements); // ["human_approval"]
+```
+
+### Decision semantics
+
+- **EXECUTE** — the selected possibility is authorized for downstream execution.
+- **HOLD** — the possibility is not prohibited, but authority, evidence, confidence, or human review is incomplete.
+- **BLOCK** — the possibility is explicitly outside the permitted decision boundary.
+
+A rule evaluation error becomes **HOLD**, not BLOCK: inability to verify permission is treated as uncertainty, not as proof of prohibition.
+
+### Responsibility boundary
+
+EVΛƎ decides whether a possibility should become an authorized action and records why. It does **not** execute the action, sandbox the agent, restrict networks/filesystems, or provide hardware/runtime enforcement. Those controls belong downstream and can consume the EVΛƎ decision.
+
+> EVΛƎ decides. Enforcement systems enforce. Ǝ traces.
