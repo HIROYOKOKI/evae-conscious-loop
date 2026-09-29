@@ -98,6 +98,8 @@ export interface Trace {
    * Not populated by v0.1 core; filled by trace hooks.
    */
   integrity?: Record<string, unknown>;
+  /** v0.2 authorization record; absent for the legacy run() API. */
+  authorization?: DecisionTrace;
 }
 
 /** Runs after a trace is built. Use to add hashes, signatures or chain links. */
@@ -132,37 +134,38 @@ export interface LoopOptions {
 
 /* ----------------------- Λ v0.2 Decision Boundary ---------------------- */
 
-/** Final authorization state before an external action is executed. */
 export type AuthorizationDecision = "EXECUTE" | "HOLD" | "BLOCK";
 
-/**
- * A rule may explicitly distinguish a temporary/incomplete condition (HOLD)
- * from a prohibited condition (BLOCK). Boolean outcomes remain supported.
- */
+export interface DecisionContext {
+  authority?: Record<string, unknown>;
+  evidence?: Record<string, unknown>;
+  context?: Record<string, unknown>;
+}
+
+export interface DecisionRuleInput extends RuleInput {
+  context: DecisionContext;
+}
+
 export type DecisionRuleOutcome =
   | RuleOutcome
   | { decision: AuthorizationDecision; reason?: string; requirements?: string[] };
 
 export interface DecisionRule extends Omit<BoundaryRule, "check"> {
-  check(input: RuleInput): DecisionRuleOutcome | Promise<DecisionRuleOutcome>;
+  check(input: DecisionRuleInput): DecisionRuleOutcome | Promise<DecisionRuleOutcome>;
+  /** Fail-closed by default. Set HOLD only for rules where uncertainty is reviewable. */
+  onError?: "HOLD" | "BLOCK";
 }
 
 export interface DecisionPolicy {
+  id: string;
+  version: string;
   rules: DecisionRule[];
-  /**
-   * Decision when no rule blocks/holds the selected possibility.
-   * Defaults to EXECUTE.
-   */
+  /** Defaults to HOLD when no applicable rule authorizes a possibility. */
   defaultDecision?: AuthorizationDecision;
-}
-
-export interface DecisionContext {
-  /** Who or what has authority to authorize this action. */
-  authority?: Record<string, unknown>;
-  /** Evidence available at decision time. */
-  evidence?: Record<string, unknown>;
-  /** Additional policy/context facts used by callers or trace consumers. */
-  context?: Record<string, unknown>;
+  /** Defaults to BLOCK. */
+  onRuleError?: "HOLD" | "BLOCK";
+  /** Optional lifetime for downstream authorization binding. */
+  ttlMs?: number;
 }
 
 export interface DecisionRuleEvaluation {
@@ -173,12 +176,25 @@ export interface DecisionRuleEvaluation {
   requirements?: string[];
 }
 
+export interface AuthorizationCandidate {
+  possibility: string;
+  status: AuthorizationDecision;
+  evaluations: DecisionRuleEvaluation[];
+  requirements: string[];
+}
+
 export interface DecisionTrace {
   status: AuthorizationDecision;
   selected_possibility: string | null;
   authority?: Record<string, unknown>;
   evidence?: Record<string, unknown>;
   context?: Record<string, unknown>;
+  policy: { id: string; version: string };
+  /** Canonical binding of intent + selected possibility + decision context. */
+  subject: string | null;
+  issued_at: string;
+  expires_at?: string;
+  candidates: AuthorizationCandidate[];
   evaluations: DecisionRuleEvaluation[];
   requirements: string[];
 }
