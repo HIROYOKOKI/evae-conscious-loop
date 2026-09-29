@@ -17,54 +17,17 @@ A small, model-agnostic TypeScript library. MIT licensed. No runtime dependencie
 
 ## Quick Start
 
-Requires Node.js 20.9+ for the repository app (the library alone supports Node.js 18+). Runs offline — no API key needed for the first run.
-
-**1. Install**
+Requires Node.js 18+. Install the library in your own app:
 
 ```bash
-git clone https://github.com/HIROYOKOKI/evae-conscious-loop.git
-cd evae-conscious-loop
-npm install
+npm install @evae/conscious-loop
 ```
 
-**2. Run**
-
-```bash
-npm run example
-```
-
-```
-decision: hold
-reason:   "send" is outside the boundary (...). "ask_human" is outside the boundary (...). "hold" is the most preferred possibility within the decision boundary.
-trace:    traces/<trace_id>.json
-```
-
-**3. See the Trace**
-
-```bash
-cat examples/basic/traces/*.json
-```
-
-To use a real model instead of the offline mock, set `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` and run `npm run example` again.
-
-> **npm:** `npm install @evae/conscious-loop` is planned but **not yet published** (v0.1). Until then, use this repository.
+Then save the example below as `example.mjs` and run `node example.mjs`. No API key is needed for this first run. The [repository example](https://github.com/HIROYOKOKI/evae-conscious-loop/tree/main/examples/basic) can also run offline and write a trace JSON file.
 
 ---
 
 ## Use it in your app
-
-Until the npm release, build a local package from this repository and install it in your own app:
-
-```bash
-# In the cloned evae-conscious-loop repository (after npm install)
-npm run build:lib
-cd packages/conscious-loop
-npm pack
-
-# In your app; use the absolute path to the tarball created above
-cd /path/to/your-app
-npm install /absolute/path/to/evae-conscious-loop/packages/conscious-loop/evae-conscious-loop-0.1.0.tgz
-```
 
 Save this as `example.mjs` in your app, then run `node example.mjs`:
 

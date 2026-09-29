@@ -47,23 +47,16 @@ cat examples/basic/traces/*.json
 
 To use a real model instead of the offline mock, set `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` and run `npm run example` again.
 
-> **npm:** `npm install @evae/conscious-loop` is planned but **not yet published** (v0.1). Until then, use this repository.
+**Library install (after release):** `npm install @evae/conscious-loop`. The cloned example above also runs offline.
 
 ---
 
 ## Use it in your app
 
-Until the npm release, build a local package from this repository and install it in your own app:
+Install the library in your app:
 
 ```bash
-# In the cloned evae-conscious-loop repository (after npm install)
-npm run build:lib
-cd packages/conscious-loop
-npm pack
-
-# In your app; use the absolute path to the tarball created above
-cd /path/to/your-app
-npm install /absolute/path/to/evae-conscious-loop/packages/conscious-loop/evae-conscious-loop-0.1.0.tgz
+npm install @evae/conscious-loop
 ```
 
 Save this as `example.mjs` in your app, then run `node example.mjs`:
