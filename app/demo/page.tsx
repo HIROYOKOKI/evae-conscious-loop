@@ -50,7 +50,7 @@ export default function DemoEntryPage() {
               </div>
 
               <h1 className="mt-8 text-5xl font-semibold tracking-tight md:text-6xl">
-                EVΛƎ Demo App
+                EVΛƎ Reference Demo
               </h1>
 
               <p className="mt-5 max-w-3xl text-[17px] leading-8 text-slate-600">
@@ -58,7 +58,7 @@ export default function DemoEntryPage() {
                 <span className="font-semibold text-slate-900">
                   判断の成立条件と責任の所在
                 </span>
-                を見せる営業用デモです。
+                を見せるリファレンスデモです（画面は説明用の固定データです）。
                 <br />
                 1分以内で、
                 <span className="font-semibold text-slate-900">

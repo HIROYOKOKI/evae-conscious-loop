@@ -1,0 +1,14 @@
+{
+  "name": "evae-example-basic",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx index.ts"
+  },
+  "dependencies": {
+    "@evae/conscious-loop": "*"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}

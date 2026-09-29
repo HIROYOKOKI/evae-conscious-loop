@@ -30,9 +30,9 @@ const pillars = [
 
 const loop = [
   { symbol: "E", label: "Intent", color: EVAE.E, glow: "rgba(255,69,0,0.22)" },
-  { symbol: "V", label: "Options", color: EVAE.V, glow: "rgba(30,58,138,0.24)" },
-  { symbol: "Λ", label: "Decision Gate", color: EVAE.L, glow: "rgba(132,204,22,0.22)" },
-  { symbol: "Ǝ", label: "Trace Commit", color: EVAE.TRACE, glow: "rgba(184,51,245,0.22)" },
+  { symbol: "V", label: "Possibility", color: EVAE.V, glow: "rgba(30,58,138,0.24)" },
+  { symbol: "Λ", label: "Decision Boundary", color: EVAE.L, glow: "rgba(132,204,22,0.22)" },
+  { symbol: "Ǝ", label: "Trace", color: EVAE.TRACE, glow: "rgba(184,51,245,0.22)" },
 ];
 
 export default function EvaeTopPage() {
@@ -80,16 +80,16 @@ export default function EvaeTopPage() {
             </h1>
             <p className="mt-6 max-w-3xl text-base leading-8 text-white/70 md:text-lg">
               EVΛƎ is a decision architecture for AI systems. Instead of generating explanations after an action,
-              it structures the decision process itself through Intent, Options, Gate, and Trace.
+              it structures the decision process itself through Intent, Possibility, Decision Boundary, and Trace.
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
-                href="/demo"
+                href="/playground"
                 className="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-medium text-white transition hover:opacity-90"
                 style={{ backgroundColor: EVAE.E }}
               >
-                Open Live Demo
+                Open Playground
               </Link>
               <a
                 href="https://github.com/HIROYOKOKI/evae-conscious-loop"
@@ -197,32 +197,27 @@ export default function EvaeTopPage() {
           </div>
 
           <div id="demo" className="rounded-[2rem] border border-white/10 bg-white/5 p-7 backdrop-blur">
-            <div className="text-xs tracking-[0.24em] text-white/45 uppercase">Live Demo</div>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight">Explore the Conscious Loop.</h2>
+            <div className="text-xs tracking-[0.24em] text-white/45 uppercase">Developer Playground</div>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight">Run the Conscious Loop.</h2>
             <p className="mt-4 text-base leading-8 text-white/70">
-              The live demo visualizes a minimal EVΛƎ interface for structuring AI decisions before execution. It shows
-              Intent, Options, the Decision Gate, and the committed Trace JSON.
+              The playground runs the open-source library in your browser. Change the intent and its context, and see
+              the Possibilities, the Decision Boundary evaluation, and the resulting Trace JSON.
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
-                href="/demo"
+                href="/playground"
                 className="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-medium text-white transition hover:opacity-90"
                 style={{ backgroundColor: EVAE.E }}
               >
-                Open /demo
+                Open playground
               </Link>
               <a
-                href="https://evae-conscious-loop.vercel.app/demo"
-                target="_blank"
-                rel="noreferrer"
+                href="/demo"
                 className="inline-flex items-center justify-center rounded-2xl border px-6 py-3 text-sm font-medium text-white/90 transition hover:bg-white/10"
                 style={{ borderColor: `${EVAE.TRACE}66`, backgroundColor: "rgba(184,51,245,0.08)" }}
               >
-                Public URL
+                Reference demo
               </a>
-            </div>
-            <div className="mt-5 text-sm" style={{ color: "#c9b8ff" }}>
-              https://evae-conscious-loop.vercel.app/demo
             </div>
           </div>
         </section>

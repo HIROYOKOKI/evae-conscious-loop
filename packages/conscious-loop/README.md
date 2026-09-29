@@ -11,7 +11,7 @@ V  Possibility        what could be done
 
 A small, model-agnostic TypeScript library. MIT licensed. No runtime dependencies.
 
-**Playground:** https://evae-conscious-loop.vercel.app/playground
+**Playground:** https://evae-conscious-loop.vercel.app/playground · **Source:** https://github.com/HIROYOKOKI/evae-conscious-loop
 
 ---
 

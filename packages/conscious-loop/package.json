@@ -1,0 +1,34 @@
+{
+  "name": "@evae/conscious-loop",
+  "version": "0.1.0",
+  "description": "EVΛƎ Conscious Loop — structure an AI decision before execution: Intent → Possibility → Decision Boundary → Trace.",
+  "license": "MIT",
+  "author": "Hiro Yokoki (Amuletplus G.K.)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --import tsx --test test/*.test.ts",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": ["ai-governance", "decision-architecture", "llm", "trace", "evae"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HIROYOKOKI/evae-conscious-loop.git",
+    "directory": "packages/conscious-loop"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5"
+  }
+}
