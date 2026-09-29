@@ -7,8 +7,8 @@
     "build": "npm run build:lib && next build",
     "start": "next start",
     "lint": "eslint",
-    "build:lib": "npm run build -w @evae/conscious-loop",
-    "test": "npm test -w @evae/conscious-loop",
+    "build:lib": "npm run build -w evae-conscious-loop",
+    "test": "npm test -w evae-conscious-loop",
     "example": "npm run build:lib && npm start -w evae-example-basic",
     "predev": "npm run build:lib"
   },
@@ -16,7 +16,7 @@
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "@evae/conscious-loop": "*"
+    "evae-conscious-loop": "*"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

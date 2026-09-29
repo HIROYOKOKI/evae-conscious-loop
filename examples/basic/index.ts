@@ -9,7 +9,7 @@
  * Runs offline by default. Set ANTHROPIC_API_KEY or OPENAI_API_KEY to use a real model.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
-import { anthropic, evae, fromModel, mockModel, openai } from "@evae/conscious-loop";
+import { anthropic, evae, fromModel, mockModel, openai } from "evae-conscious-loop";
 
 // V — pick a model. Any adapter works; the loop does not care which.
 const model = process.env.ANTHROPIC_API_KEY

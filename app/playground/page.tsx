@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { evae, type BoundaryRule, type RunResult } from "@evae/conscious-loop";
+import { evae, type BoundaryRule, type RunResult } from "evae-conscious-loop";
 
 const BRAND = { E: "#FF4500", V: "#1E3A8A", L: "#84CC16", T: "#B833F5" };
 
@@ -94,7 +94,7 @@ export default function PlaygroundPage() {
             </p>
             <h1 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">Conscious Loop Playground</h1>
             <p className="mt-2 max-w-2xl text-[15px] leading-7 text-slate-600">
-              This page runs <code className="rounded bg-slate-100 px-1.5 py-0.5 text-[13px]">@evae/conscious-loop</code>{" "}
+              This page runs <code className="rounded bg-slate-100 px-1.5 py-0.5 text-[13px]">evae-conscious-loop</code>{" "}
               in your browser. Change the intent or its context and watch the decision and trace update.
             </p>
           </div>

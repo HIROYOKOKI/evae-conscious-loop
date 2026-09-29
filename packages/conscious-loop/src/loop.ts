@@ -47,7 +47,7 @@ export function createLoop(options: LoopOptions = {}): ConsciousLoop {
         metadata: {
           ...input.metadata,
           schema_version: TRACE_SCHEMA_VERSION,
-          library: `@evae/conscious-loop@${VERSION}`,
+          library: `evae-conscious-loop@${VERSION}`,
           possibility_source: source,
           duration_ms: now().getTime() - started.getTime(),
         },

@@ -1,5 +1,5 @@
 {
-  "name": "@evae/conscious-loop",
+  "name": "evae-conscious-loop",
   "version": "0.1.0",
   "description": "EVΛƎ Conscious Loop — structure an AI decision before execution: Intent → Possibility → Decision Boundary → Trace.",
   "license": "MIT",

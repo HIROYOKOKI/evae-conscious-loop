@@ -47,7 +47,7 @@ cat examples/basic/traces/*.json
 
 To use a real model instead of the offline mock, set `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` and run `npm run example` again.
 
-**Library install (after release):** `npm install @evae/conscious-loop`. The cloned example above also runs offline.
+**Library install (after release):** `npm install evae-conscious-loop`. The cloned example above also runs offline.
 
 ---
 
@@ -56,13 +56,13 @@ To use a real model instead of the offline mock, set `ANTHROPIC_API_KEY` or `OPE
 Install the library in your app:
 
 ```bash
-npm install @evae/conscious-loop
+npm install evae-conscious-loop
 ```
 
 Save this as `example.mjs` in your app, then run `node example.mjs`:
 
 ```js
-import { evae } from "@evae/conscious-loop";
+import { evae } from "evae-conscious-loop";
 
 const result = await evae.run({
   // E — Intent
@@ -108,7 +108,7 @@ How a decision is made:
 ### Let a model propose the possibilities
 
 ```ts
-import { evae, fromModel, anthropic } from "@evae/conscious-loop";
+import { evae, fromModel, anthropic } from "evae-conscious-loop";
 
 const result = await evae.run({
   intent: "Send this quote email to the client automatically",
@@ -166,7 +166,7 @@ Gemini or anything else: implement `complete()` — about 20 lines.
   "reason": "...",
   "metadata": {
     "schema_version": "0.1",
-    "library": "@evae/conscious-loop@0.1.0",
+    "library": "evae-conscious-loop@0.1.0",
     "possibility_source": "model:anthropic/claude-sonnet-4-6",
     "duration_ms": 812
   }
@@ -183,7 +183,7 @@ v0.1 does not sign or hash traces. It is designed so you can add that without ch
 
 ```ts
 import { createHash } from "node:crypto";
-import { createLoop, canonicalize } from "@evae/conscious-loop";
+import { createLoop, canonicalize } from "evae-conscious-loop";
 
 let previous: string | null = null;
 
@@ -204,7 +204,7 @@ const loop = createLoop({
 ## Repository layout
 
 ```
-packages/conscious-loop/   the library (@evae/conscious-loop)
+packages/conscious-loop/   the library (evae-conscious-loop)
   src/intent.ts            E  Intent
   src/possibility.ts       V  Possibility
   src/boundary.ts          Λ  Decision Boundary

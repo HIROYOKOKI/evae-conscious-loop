@@ -6,7 +6,7 @@
     "start": "tsx index.ts"
   },
   "dependencies": {
-    "@evae/conscious-loop": "*"
+    "evae-conscious-loop": "*"
   },
   "devDependencies": {
     "tsx": "^4.19.0"
