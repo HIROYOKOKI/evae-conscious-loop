@@ -57,7 +57,10 @@ export default function PlaygroundPage() {
         }
       })
       .catch((e: unknown) => {
-        if (!cancelled) setError(e instanceof Error ? e.message : String(e));
+        if (!cancelled) {
+          setResult(null);
+          setError(e instanceof Error ? e.message : String(e));
+        }
       });
     return () => {
       cancelled = true;
@@ -65,6 +68,11 @@ export default function PlaygroundPage() {
   }, [intentText, senderRole, approverOnDuty]);
 
   const traceJson = useMemo(() => (result ? JSON.stringify(result.trace, null, 2) : ""), [result]);
+
+  const clearPrevious = () => {
+    setResult(null);
+    setError(null);
+  };
 
   const download = () => {
     if (!result) return;
@@ -105,7 +113,7 @@ export default function PlaygroundPage() {
               <input
                 id="intent"
                 value={intentText}
-                onChange={(e) => setIntentText(e.target.value)}
+                onChange={(e) => { clearPrevious(); setIntentText(e.target.value); }}
                 className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-[15px] focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
               />
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -114,7 +122,7 @@ export default function PlaygroundPage() {
                   <select
                     id="role"
                     value={senderRole}
-                    onChange={(e) => setSenderRole(e.target.value as "assistant" | "sender")}
+                    onChange={(e) => { clearPrevious(); setSenderRole(e.target.value as "assistant" | "sender"); }}
                     className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-[15px] focus:outline-none focus:ring-2 focus:ring-slate-200"
                   >
                     <option value="assistant">assistant (AI)</option>
@@ -125,7 +133,7 @@ export default function PlaygroundPage() {
                   <input
                     type="checkbox"
                     checked={approverOnDuty}
-                    onChange={(e) => setApproverOnDuty(e.target.checked)}
+                    onChange={(e) => { clearPrevious(); setApproverOnDuty(e.target.checked); }}
                     className="h-4 w-4"
                   />
                   Approver on duty
@@ -155,7 +163,7 @@ export default function PlaygroundPage() {
                   const ev = result?.trace.decision_boundary.evaluations.find((e) => e.rule === rule.id);
                   return (
                     <li key={rule.id} className="text-[15px]">
-                      <span className={ev?.pass ? "text-green-700" : "text-[#c2410c]"}>{ev?.pass ? "pass" : "fail"}</span>{" "}
+                      <span className={ev ? (ev.pass ? "text-green-700" : "text-[#c2410c]") : "text-slate-400"}>{ev ? (ev.pass ? "pass" : "fail") : "pending"}</span>{" "}
                       <span className="text-slate-800">{rule.description}</span>
                       {ev && !ev.pass && ev.reason ? <span className="block pl-9 text-sm text-slate-500">{ev.reason}</span> : null}
                     </li>

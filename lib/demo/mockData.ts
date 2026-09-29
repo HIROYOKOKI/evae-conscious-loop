@@ -19,8 +19,8 @@ export type ResponsibilityLogItem = {
 
 export const demoMeta = {
   traceId: "TRC-9F27A",
-  env: "本番",
-  version: "v1.2.7",
+  env: "デモ",
+  version: "concept",
 };
 
 export const demoTabs: { key: DemoTabKey; label: string; href: string }[] = [

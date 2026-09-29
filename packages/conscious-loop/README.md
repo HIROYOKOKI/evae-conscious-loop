@@ -17,7 +17,7 @@ A small, model-agnostic TypeScript library. MIT licensed. No runtime dependencie
 
 ## Quick Start
 
-Requires Node.js 18+. Runs offline — no API key needed for the first run.
+Requires Node.js 20.9+ for the repository app (the library alone supports Node.js 18+). Runs offline — no API key needed for the first run.
 
 **1. Install**
 
@@ -35,9 +35,7 @@ npm run example
 
 ```
 decision: hold
-reason:   "send" is outside the boundary (sender_role is "assistant", external send needs "sender").
-          "ask_human" is outside the boundary (no approver is on duty).
-          "hold" is the most preferred possibility within the decision boundary.
+reason:   "send" is outside the boundary (...). "ask_human" is outside the boundary (...). "hold" is the most preferred possibility within the decision boundary.
 trace:    traces/<trace_id>.json
 ```
 
@@ -55,7 +53,22 @@ To use a real model instead of the offline mock, set `ANTHROPIC_API_KEY` or `OPE
 
 ## Use it in your app
 
-```ts
+Until the npm release, build a local package from this repository and install it in your own app:
+
+```bash
+# In the cloned evae-conscious-loop repository (after npm install)
+npm run build:lib
+cd packages/conscious-loop
+npm pack
+
+# In your app; use the absolute path to the tarball created above
+cd /path/to/your-app
+npm install /absolute/path/to/evae-conscious-loop/packages/conscious-loop/evae-conscious-loop-0.1.0.tgz
+```
+
+Save this as `example.mjs` in your app, then run `node example.mjs`:
+
+```js
 import { evae } from "@evae/conscious-loop";
 
 const result = await evae.run({
@@ -76,7 +89,7 @@ const result = await evae.run({
         description: "Automatic sending is allowed only up to 100,000",
         appliesTo: ["send_automatically"],
         check: ({ intent }) =>
-          (intent.context?.amount as number) <= 100000
+          Number(intent.context?.amount) <= 100000
             ? true
             : { pass: false, reason: "amount exceeds the automatic limit" },
       },
@@ -84,8 +97,8 @@ const result = await evae.run({
   },
 });
 
-result.decision; // "request_human_approval"
-result.trace;    // Ǝ — JSON you can store anywhere
+console.log(result.decision); // "request_human_approval"
+console.log(result.trace);    // Ǝ — JSON you can store anywhere
 ```
 
 How a decision is made:
@@ -94,6 +107,8 @@ How a decision is made:
 2. Every rule is evaluated against every possibility it applies to. A rule that throws does not pass.
 3. The decision is the **most preferred possibility that passes every applicable rule**.
 4. If nothing passes, `decision` is `null`.
+
+**Default is allow:** a possibility with no applicable rules passes the boundary. Define rules for every consequential option. A decision here does not grant execution authority; your application remains responsible for what happens next.
 
 **The loop decides; it does not act.** Executing (or not executing) the decision is up to your application.
 

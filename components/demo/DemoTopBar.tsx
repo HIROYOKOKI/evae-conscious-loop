@@ -72,6 +72,9 @@ export default function DemoTopBar({
           >
             Design-by-Transparency
           </div>
+          <p className={dark ? "mt-2 text-xs text-slate-300" : "mt-2 text-xs text-slate-600"}>
+            説明用の固定データです。署名・実行制御・監査機能の動作を示すものではありません。
+          </p>
         </div>
 
         <div className="flex flex-wrap items-stretch gap-3">
