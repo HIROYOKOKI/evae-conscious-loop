@@ -220,6 +220,8 @@ These are part of the commercial EVΛƎ runtime (private).
 
 The Action Loop exists as a separate commercial runtime layer and is intentionally not disclosed in this open-source repository.
 
+The Action Loop is the commercial runtime layer that carries an approved decision toward controlled execution, while preserving authority, enforcement, and traceability.
+
 The Conscious Loop is complete on its own: it produces a decision and a trace you can store and audit. Enforcing that decision at runtime, across systems and teams, is where the commercial components come in.
 
 ---
