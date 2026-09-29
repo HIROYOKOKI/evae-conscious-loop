@@ -1,7 +1,7 @@
 /** Ǝ — Trace */
 import type { Trace, TraceHook } from "./types.js";
 
-export const TRACE_SCHEMA_VERSION = "0.1";
+export const TRACE_SCHEMA_VERSION = "0.2";
 
 export function createTraceId(): string {
   const c = (globalThis as { crypto?: { randomUUID?: () => string } }).crypto;
