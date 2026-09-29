@@ -128,3 +128,73 @@ export interface LoopOptions {
   /** Override for tests / deterministic traces. */
   createId?: () => string;
 }
+
+
+/* ----------------------- Λ v0.2 Decision Boundary ---------------------- */
+
+/** Final authorization state before an external action is executed. */
+export type AuthorizationDecision = "EXECUTE" | "HOLD" | "BLOCK";
+
+/**
+ * A rule may explicitly distinguish a temporary/incomplete condition (HOLD)
+ * from a prohibited condition (BLOCK). Boolean outcomes remain supported.
+ */
+export type DecisionRuleOutcome =
+  | RuleOutcome
+  | { decision: AuthorizationDecision; reason?: string; requirements?: string[] };
+
+export interface DecisionRule extends Omit<BoundaryRule, "check"> {
+  check(input: RuleInput): DecisionRuleOutcome | Promise<DecisionRuleOutcome>;
+}
+
+export interface DecisionPolicy {
+  rules: DecisionRule[];
+  /**
+   * Decision when no rule blocks/holds the selected possibility.
+   * Defaults to EXECUTE.
+   */
+  defaultDecision?: AuthorizationDecision;
+}
+
+export interface DecisionContext {
+  /** Who or what has authority to authorize this action. */
+  authority?: Record<string, unknown>;
+  /** Evidence available at decision time. */
+  evidence?: Record<string, unknown>;
+  /** Additional policy/context facts used by callers or trace consumers. */
+  context?: Record<string, unknown>;
+}
+
+export interface DecisionRuleEvaluation {
+  possibility: string;
+  rule: string;
+  decision: AuthorizationDecision;
+  reason?: string;
+  requirements?: string[];
+}
+
+export interface DecisionTrace {
+  status: AuthorizationDecision;
+  selected_possibility: string | null;
+  authority?: Record<string, unknown>;
+  evidence?: Record<string, unknown>;
+  context?: Record<string, unknown>;
+  evaluations: DecisionRuleEvaluation[];
+  requirements: string[];
+}
+
+export interface EvaluateDecisionInput {
+  intent: IntentInput;
+  possibilities: PossibilitiesInput;
+  policy: DecisionPolicy;
+  decisionContext?: DecisionContext;
+  metadata?: Record<string, unknown>;
+}
+
+export interface EvaluateDecisionResult {
+  decision: AuthorizationDecision;
+  possibility: Possibility | null;
+  reason: string;
+  requirements: string[];
+  trace: Trace & { authorization: DecisionTrace };
+}
