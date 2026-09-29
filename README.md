@@ -269,7 +269,7 @@ The MIT-licensed repository does **not** include access to proprietary EVΛƎ co
 
 Use of those proprietary components or services requires a separate commercial agreement with Amuletplus G.K.
 
-Use of the EVΛƎ name, logos, or claims of certification, endorsement, or official partnership is separate from the MIT-licensed software and may require permission from Amuletplus G.K.
+EVΛƎ is a registered trademark in Japan in Classes 16, 25, and 42. Use of the EVΛƎ name, logos, or claims of certification, endorsement, or official partnership is separate from the MIT-licensed software and may require permission from Amuletplus G.K.
 
 This notice does not modify the terms of the MIT License.
 
