@@ -11,6 +11,10 @@ V  Possibility        what could be done
 
 A small, model-agnostic TypeScript library. MIT licensed. No runtime dependencies.
 
+**Current release:** v0.2.0 · **Previous release:** v0.1.0 · **Releases:** https://github.com/HIROYOKOKI/evae-conscious-loop/releases
+
+v0.2 adds an explicit pre-execution authorization decision at Λ. The legacy `evae.run()` API remains available for compatibility; the new `evaluateDecision()` API returns `EXECUTE`, `HOLD`, or `BLOCK` without executing the action itself.
+
 **Playground:** https://evae-conscious-loop.vercel.app/playground
 
 ---
@@ -132,7 +136,7 @@ interface ModelAdapter {
 }
 ```
 
-Included in v0.1 (`fetch`-based, no SDKs):
+Available since v0.1 and still included in v0.2 (`fetch`-based, no SDKs):
 
 | Adapter | Covers |
 | --- | --- |
@@ -144,7 +148,61 @@ Gemini or anything else: implement `complete()` — about 20 lines.
 
 ---
 
-## Trace schema (v0.1)
+## v0.2 — Explicit authorization at Λ
+
+**Capability ≠ Authority.**
+
+v0.2 adds `evaluateDecision()`, an explicit pre-execution authorization API. It can return **EXECUTE**, **HOLD**, or **BLOCK** while keeping actual execution outside the open-source Conscious Loop.
+
+```ts
+import { evaluateDecision } from "evae-conscious-loop";
+
+const result = await evaluateDecision({
+  intent: "Send payment",
+  possibilities: ["send payment", "ask human", "stop"],
+  policy: {
+    id: "payments",
+    version: "1.0",
+    rules: [
+      {
+        id: "payment-approval",
+        description: "Payment requires approval evidence",
+        appliesTo: ["send_payment"],
+        check: () => ({
+          decision: "HOLD",
+          reason: "Approval evidence is missing",
+          requirements: ["human_approval"],
+        }),
+      },
+    ],
+  },
+  decisionContext: {
+    authority: { actor: "agent", scope: "draft-only" },
+    evidence: { approval_id: null },
+  },
+});
+
+console.log(result.decision);      // "HOLD"
+console.log(result.requirements);  // ["human_approval"]
+```
+
+Decision semantics:
+
+- **EXECUTE** — the selected possibility is authorized for downstream execution.
+- **HOLD** — authority, evidence, confidence, or human review is incomplete.
+- **BLOCK** — the possibility is explicitly outside the permitted decision boundary.
+
+Rules fail closed: a rule error becomes **BLOCK** by default. If no rule applies, the default is **HOLD**, not EXECUTE.
+
+**v0.2 returns an authorization decision; it does not perform or enforce the action itself. Runtime enforcement remains outside the open-source Conscious Loop.**
+
+> EVΛƎ decides. Enforcement systems enforce. Ǝ traces.
+
+---
+
+## Legacy `run()` Trace schema (v0.1)
+
+The original `evae.run()` API remains available in v0.2 for compatibility and retains the v0.1 trace schema. The newer `evaluateDecision()` API uses the v0.2 authorization trace.
 
 ```json
 {
@@ -240,7 +298,7 @@ npm run dev       # playground + reference demo at http://localhost:3000
 
 - Action Loop
 - Runtime enforcement
-- EXECUTE / HOLD / BLOCK enforcement engine
+- Runtime enforcement of EXECUTE / HOLD / BLOCK decisions
 - Enterprise approval workflow
 - Production thresholds
 - Enterprise policy engine
@@ -260,12 +318,12 @@ The Conscious Loop is complete on its own: it produces a decision and a trace yo
 
 **Patent pending.** The EVΛƎ Framework and related architecture are subject to pending patent applications.
 
-The software contained in this repository — EVΛƎ Conscious Loop v0.1 — is released under the MIT License. Commercial use of this MIT-licensed code is permitted under the terms of that license.
+All versions of EVΛƎ Conscious Loop contained in this repository are released under the MIT License. Commercial use of this MIT-licensed code is permitted under the terms of that license.
 
 The MIT-licensed repository does **not** include access to proprietary EVΛƎ commercial components, including:
 
 - Action Loop
-- Runtime enforcement and the EXECUTE / HOLD / BLOCK enforcement engine
+- Runtime enforcement of EXECUTE / HOLD / BLOCK decisions
 - EVΛƎ ARMOR
 - Enterprise approval workflows
 - Production thresholds and enterprise policy engine
