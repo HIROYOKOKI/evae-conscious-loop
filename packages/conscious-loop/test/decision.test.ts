@@ -3,12 +3,14 @@ import assert from "node:assert/strict";
 import { createLoop, evaluateDecision } from "../src/index.ts";
 
 const fixed = { now: () => new Date("2026-09-30T00:00:00Z"), createId: () => "trc-v02" };
-const policy = (rules: any[] = [], extra: Record<string, unknown> = {}) => ({ id: "test-policy", version: "1", rules, ...extra });
+import type { DecisionPolicy, DecisionRule } from "../src/types.ts";
+
+const policy = (rules: DecisionRule[] = [], extra: Partial<DecisionPolicy> = {}): DecisionPolicy => ({ id: "test-policy", version: "1", rules, ...extra });
 
 test("EXECUTE only when a rule explicitly authorizes", async () => {
   const r = await evaluateDecision({
     intent: "Send invoice", possibilities: ["send invoice"],
-    policy: policy([{ id:"authority", description:"authorized manager", check: ({context}: any) =>
+    policy: policy([{ id:"authority", description:"authorized manager", check: ({context}) =>
       context.authority?.role === "manager" ? {decision:"EXECUTE"} : {decision:"HOLD", requirements:["manager_authority"]} }]),
     decisionContext: { authority: { role:"manager" }, evidence:{ approval_id:"A-1" } },
   }, fixed);
@@ -29,7 +31,7 @@ test("no applicable rule defaults to HOLD", async () => {
 test("invalid runtime decision fails closed to BLOCK", async () => {
   const r = await evaluateDecision({
     intent:"x", possibilities:["send"],
-    policy:policy([{ id:"typo", description:"bad runtime value", check: () => ({decision:"Block"} as any) }]),
+    policy:policy([{ id:"typo", description:"bad runtime value", check: () => ({decision:"Block"} as never) }]),
   }, fixed);
   assert.equal(r.decision, "BLOCK");
   assert.equal(r.trace.decision, null);
@@ -98,4 +100,45 @@ test("empty possibilities returns HOLD", async () => {
 test("legacy run keeps schema 0.1", async () => {
   const r = await createLoop(fixed).run({ intent:"x", possibilities:["a"], boundary:{rules:[]} });
   assert.equal(r.trace.metadata.schema_version, "0.1");
+});
+
+
+test("boolean true rule explicitly authorizes EXECUTE", async () => {
+  const r = await evaluateDecision({ intent:"x", possibilities:["send"], policy:policy([
+    { id:"ok", description:"explicit true", check:()=>true },
+  ]) }, fixed);
+  assert.equal(r.decision, "EXECUTE");
+});
+
+test("unsafe fallback and error configuration is rejected at runtime", async () => {
+  for (const bad of [
+    { defaultDecision:"EXECUTE" },
+    { defaultDecision:"ALLOW" },
+    { onRuleError:"EXECUTE" },
+  ]) {
+    await assert.rejects(() => evaluateDecision({
+      intent:"x", possibilities:["send"],
+      policy:{ id:"p", version:"1", rules:[], ...bad } as unknown as DecisionPolicy,
+    }, fixed), /invalid policy/);
+  }
+  await assert.rejects(() => evaluateDecision({
+    intent:"x", possibilities:["send"],
+    policy:{ id:"p", version:"1", rules:[
+      { id:"bad", description:"bad", onError:"EXECUTE", check:()=>{ throw new Error("x"); } },
+    ] } as unknown as DecisionPolicy,
+  }, fixed), /onError/);
+});
+
+test("invalid ttl and appliesTo configuration is rejected", async () => {
+  for (const ttlMs of [0, -1, Number.NaN]) {
+    await assert.rejects(() => evaluateDecision({
+      intent:"x", possibilities:["send"], policy:policy([], { ttlMs }),
+    }, fixed), /ttlMs/);
+  }
+  await assert.rejects(() => evaluateDecision({
+    intent:"x", possibilities:["send"],
+    policy:{ id:"p", version:"1", rules:[
+      { id:"bad", description:"bad", appliesTo:"send", check:()=>true },
+    ] } as unknown as DecisionPolicy,
+  }, fixed), /appliesTo/);
 });
