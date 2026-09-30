@@ -4,11 +4,18 @@ import { applyHooks, canonicalize, createTraceId } from "./trace.js";
 import { VERSION } from "./loop.js";
 import type {
   AuthorizationCandidate, AuthorizationDecision, DecisionRuleEvaluation,
-  EvaluateDecisionInput, EvaluateDecisionResult, LoopOptions, Possibility, Trace,
+  EvaluateDecisionInput, EvaluateDecisionResult, LoopOptions, Trace,
 } from "./types.js";
 
 export const DECISION_SCHEMA_VERSION = "0.2";
 const VALID = new Set<AuthorizationDecision>(["EXECUTE", "HOLD", "BLOCK"]);
+const SAFE_FALLBACKS = new Set(["HOLD", "BLOCK"]);
+
+function assertOneOf(v: unknown, allowed: Set<string>, name: string): void {
+  if (v !== undefined && (typeof v !== "string" || !allowed.has(v))) {
+    throw new TypeError(`EVΛƎ: invalid ${name}: ${JSON.stringify(v)}`);
+  }
+}
 
 function rank(d: AuthorizationDecision): number {
   if (!VALID.has(d)) throw new TypeError(`invalid decision: ${JSON.stringify(d)}`);
@@ -45,12 +52,24 @@ export async function evaluateDecision(input: EvaluateDecisionInput, options: Lo
   const { possibilities, source } = await resolvePossibilities(input.possibilities, intent);
   if (!input.policy || !Array.isArray(input.policy.rules)) throw new TypeError("EVΛƎ: policy.rules must be an array.");
   if (!input.policy.id || !input.policy.version) throw new TypeError("EVΛƎ: policy.id and policy.version are required.");
+  assertOneOf(input.policy.defaultDecision, SAFE_FALLBACKS, "policy.defaultDecision");
+  assertOneOf(input.policy.onRuleError, SAFE_FALLBACKS, "policy.onRuleError");
+  for (const rule of input.policy.rules) {
+    assertOneOf(rule.onError, SAFE_FALLBACKS, `rules[${rule.id}].onError`);
+    if (rule.appliesTo !== undefined && !Array.isArray(rule.appliesTo)) {
+      throw new TypeError(`EVΛƎ: rules[${rule.id}].appliesTo must be an array.`);
+    }
+  }
+  if (input.policy.ttlMs !== undefined && !(Number.isFinite(input.policy.ttlMs) && input.policy.ttlMs > 0)) {
+    throw new TypeError("EVΛƎ: policy.ttlMs must be a positive finite number.");
+  }
+  const fallback: "HOLD" | "BLOCK" = input.policy.defaultDecision ?? "HOLD";
 
   const decisionContext = input.decisionContext ?? {};
   const candidates: AuthorizationCandidate[] = [];
 
   for (const possibility of possibilities) {
-    let status: AuthorizationDecision = input.policy.defaultDecision ?? "HOLD";
+    let status: AuthorizationDecision | null = null;
     const evaluations: DecisionRuleEvaluation[] = [];
     const requirements = new Set<string>();
     let applicable = 0;
@@ -75,10 +94,13 @@ export async function evaluateDecision(input: EvaluateDecisionInput, options: Lo
       };
       evaluations.push(ev);
       normalized.requirements?.forEach((r) => requirements.add(r));
-      if (rank(normalized.decision) > rank(status)) status = normalized.decision;
+      if (status === null || rank(normalized.decision) > rank(status)) status = normalized.decision;
     }
-    if (applicable === 0 && input.policy.defaultDecision === undefined) requirements.add("no_applicable_rule");
-    candidates.push({ possibility: possibility.id, status, evaluations, requirements: [...requirements] });
+    if (applicable === 0) {
+      status = fallback;
+      requirements.add("no_applicable_rule");
+    }
+    candidates.push({ possibility: possibility.id, status: status ?? fallback, evaluations, requirements: [...requirements] });
   }
 
   // Preference semantics: the first non-BLOCK candidate wins, even if HOLD.
