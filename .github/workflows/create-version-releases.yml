@@ -23,6 +23,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           if ! git rev-parse -q --verify "refs/tags/v0.1.0" >/dev/null; then
             git tag -a v0.1.0 758a9a0735e15e378e2df69c24a7c508bf3eb091 -m "EVΛƎ Conscious Loop v0.1.0"
