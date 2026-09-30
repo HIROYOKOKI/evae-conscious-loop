@@ -1,0 +1,75 @@
+name: Create version tags and releases
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/create-version-releases.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  create-releases:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create immutable version tags
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if ! git rev-parse -q --verify "refs/tags/v0.1.0" >/dev/null; then
+            git tag -a v0.1.0 758a9a0735e15e378e2df69c24a7c508bf3eb091 -m "EVΛƎ Conscious Loop v0.1.0"
+            git push origin v0.1.0
+          fi
+
+          if ! git rev-parse -q --verify "refs/tags/v0.2.0" >/dev/null; then
+            git tag -a v0.2.0 65ecad4b203eba4865e8b01fe280b59db3e736b5 -m "EVΛƎ Conscious Loop v0.2.0"
+            git push origin v0.2.0
+          fi
+
+      - name: Create GitHub releases
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if ! gh release view v0.1.0 >/dev/null 2>&1; then
+            gh release create v0.1.0 \
+              --title "EVΛƎ Conscious Loop v0.1.0 — Initial Public Core" \
+              --notes-file - <<'EOF'
+          Initial public release of EVΛƎ Conscious Loop.
+
+          - Intent → Possibility → Decision Boundary → Trace
+          - Model-agnostic TypeScript core
+          - Structured decision trace
+          - Model adapters and offline mock support
+          - MIT licensed
+
+          This release establishes the first public core of EVΛƎ Conscious Loop.
+          EOF
+          fi
+
+          if ! gh release view v0.2.0 >/dev/null 2>&1; then
+            gh release create v0.2.0 \
+              --title "EVΛƎ Conscious Loop v0.2.0 — Explicit Decision Boundary" \
+              --latest \
+              --notes-file - <<'EOF'
+          EVΛƎ Conscious Loop v0.2.0 makes Λ an explicit pre-execution Decision Boundary.
+
+          Highlights:
+          - Explicit pre-execution Decision Boundary
+          - Fail-closed EXECUTE / HOLD / BLOCK authorization
+          - Decision evidence
+          - Compatibility safeguards
+          - Expanded tests and CI
+          - Updated documentation and patent-pending notice
+
+          v0.2.0 is the current release, building on the initial v0.1.0 public core.
+          EOF
+          fi
