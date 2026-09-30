@@ -3,10 +3,6 @@ name: Publish Package to npm
 on:
   release:
     types: [published]
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/publish.yml"
   workflow_dispatch:
     inputs:
       tag:
@@ -20,10 +16,10 @@ permissions:
 
 jobs:
   publish:
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'v')
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'v')
     runs-on: ubuntu-latest
     env:
-      RELEASE_TAG: ${{ github.event_name == 'push' && 'v0.2.0' || github.event_name == 'workflow_dispatch' && inputs.tag || github.event.release.tag_name }}
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.event.release.tag_name }}
     steps:
       - uses: actions/checkout@v6
         with:
