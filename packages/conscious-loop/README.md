@@ -313,7 +313,7 @@ EVΛƎ decides whether a possibility should become an authorized action and reco
 
 ### Authorization handoff contract
 
-For downstream enforcement, `authorization` records the policy id/version, canonical `subject` binding, issue time, optional expiry, all candidate outcomes, authority/evidence context, and requirements. An enforcement layer should execute only when `authorization.status === "EXECUTE"`, `trace.decision` matches the intended possibility, the authorization is unexpired, and the action reconstructed by the enforcer matches the recorded subject.
+For downstream enforcement, `authorization` records the policy id/version, canonical `subject` binding, issue time, optional expiry, all candidate outcomes, authority/evidence context, and requirements. An enforcement layer should execute only when `authorization.status === "EXECUTE"`, `trace.decision` matches the intended possibility, the policy id/version is the expected version, the authorization is unexpired, and the action reconstructed by the enforcer matches the recorded subject. For production policies, set a short `ttlMs`; an authorization without `expires_at` should not be treated as indefinitely reusable.
 
 Preference semantics are deliberate: the first non-BLOCK possibility wins. Therefore a preferred HOLD is not silently bypassed by a later EXECUTE candidate; the caller must resolve or replace the held possibility explicitly.
 
@@ -323,3 +323,12 @@ Preference semantics are deliberate: the first non-BLOCK possibility wins. There
 The EVΛƎ Framework is the subject of **Japanese Patent Application No. 2025-160873**, filed on **September 28, 2025**.
 
 This notice identifies the patent-pending status of the underlying EVΛƎ Framework. It does not state that every component, API, or implementation in this open-source package is independently covered by the pending application.
+
+
+### Fail-closed invariant
+
+`EXECUTE` can only be produced when at least one applicable rule is evaluated and the applicable rule set resolves to EXECUTE. Missing rules never imply permission. `defaultDecision` and rule-error fallbacks accept only HOLD or BLOCK; unsafe runtime values are rejected.
+
+Legacy `run()` traces retain schema 0.1. In v0.2 authorization traces, `decision_boundary.within` describes candidates whose rules resolve to EXECUTE, while `trace.decision` is populated only when the selected preferred candidate itself is authorized for execution. A preferred HOLD is therefore allowed to coexist with later executable candidates in `within`.
+
+If possibility generation throws (including a model/source failure), `evaluateDecision()` rejects and produces no EXECUTE authorization. Callers must treat that failure as non-executable.
