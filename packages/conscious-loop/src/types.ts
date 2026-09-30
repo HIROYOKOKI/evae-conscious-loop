@@ -98,6 +98,8 @@ export interface Trace {
    * Not populated by v0.1 core; filled by trace hooks.
    */
   integrity?: Record<string, unknown>;
+  /** v0.2 authorization record; absent for the legacy run() API. */
+  authorization?: DecisionTrace;
 }
 
 /** Runs after a trace is built. Use to add hashes, signatures or chain links. */
@@ -127,4 +129,88 @@ export interface LoopOptions {
   now?: () => Date;
   /** Override for tests / deterministic traces. */
   createId?: () => string;
+}
+
+
+/* ----------------------- Λ v0.2 Decision Boundary ---------------------- */
+
+export type AuthorizationDecision = "EXECUTE" | "HOLD" | "BLOCK";
+
+export interface DecisionContext {
+  authority?: Record<string, unknown>;
+  evidence?: Record<string, unknown>;
+  context?: Record<string, unknown>;
+}
+
+export interface DecisionRuleInput extends RuleInput {
+  context: DecisionContext;
+}
+
+export type DecisionRuleOutcome =
+  | RuleOutcome
+  | { decision: AuthorizationDecision; reason?: string; requirements?: string[] };
+
+export interface DecisionRule extends Omit<BoundaryRule, "check"> {
+  check(input: DecisionRuleInput): DecisionRuleOutcome | Promise<DecisionRuleOutcome>;
+  /** Fail-closed by default. Set HOLD only for rules where uncertainty is reviewable. */
+  onError?: "HOLD" | "BLOCK";
+}
+
+export interface DecisionPolicy {
+  id: string;
+  version: string;
+  rules: DecisionRule[];
+  /** Defaults to HOLD when no applicable rule authorizes a possibility. */
+  defaultDecision?: "HOLD" | "BLOCK";
+  /** Defaults to BLOCK. */
+  onRuleError?: "HOLD" | "BLOCK";
+  /** Optional lifetime for downstream authorization binding. */
+  ttlMs?: number;
+}
+
+export interface DecisionRuleEvaluation {
+  possibility: string;
+  rule: string;
+  decision: AuthorizationDecision;
+  reason?: string;
+  requirements?: string[];
+}
+
+export interface AuthorizationCandidate {
+  possibility: string;
+  status: AuthorizationDecision;
+  evaluations: DecisionRuleEvaluation[];
+  requirements: string[];
+}
+
+export interface DecisionTrace {
+  status: AuthorizationDecision;
+  selected_possibility: string | null;
+  authority?: Record<string, unknown>;
+  evidence?: Record<string, unknown>;
+  context?: Record<string, unknown>;
+  policy: { id: string; version: string };
+  /** Canonical binding of intent + selected possibility + decision context. */
+  subject: string | null;
+  issued_at: string;
+  expires_at?: string;
+  candidates: AuthorizationCandidate[];
+  evaluations: DecisionRuleEvaluation[];
+  requirements: string[];
+}
+
+export interface EvaluateDecisionInput {
+  intent: IntentInput;
+  possibilities: PossibilitiesInput;
+  policy: DecisionPolicy;
+  decisionContext?: DecisionContext;
+  metadata?: Record<string, unknown>;
+}
+
+export interface EvaluateDecisionResult {
+  decision: AuthorizationDecision;
+  possibility: Possibility | null;
+  reason: string;
+  requirements: string[];
+  trace: Trace & { authorization: DecisionTrace };
 }

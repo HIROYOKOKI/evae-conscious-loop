@@ -1,6 +1,7 @@
 /** Ǝ — Trace */
 import type { Trace, TraceHook } from "./types.js";
 
+/** Legacy createLoop()/run() trace schema. */
 export const TRACE_SCHEMA_VERSION = "0.1";
 
 export function createTraceId(): string {

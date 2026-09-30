@@ -4,6 +4,7 @@ export type { ConsciousLoop } from "./loop.js";
 export { resolveIntent } from "./intent.js";
 export { resolvePossibilities, normalizePossibilities, toId } from "./possibility.js";
 export { evaluateBoundary } from "./boundary.js";
+export { evaluateDecision } from "./decision.js";
 export { canonicalize, createTraceId, TRACE_SCHEMA_VERSION } from "./trace.js";
 
 export { fromModel } from "./adapters/from-model.js";

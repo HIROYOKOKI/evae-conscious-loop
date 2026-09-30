@@ -256,3 +256,79 @@ This notice does not modify the terms of the MIT License.
 Created by Hiro Yokoki, Founder, Amuletplus G.K. (Tokyo). For collaboration or commercial inquiries, connect via LinkedIn.
 
 MIT License.
+
+
+## v0.2 — Explicit authorization at Λ
+
+**Capability ≠ Authority.**
+
+EVΛƎ v0.2 adds an explicit pre-execution authorization decision without turning the library into an execution or sandboxing system.
+
+```ts
+import { evaluateDecision } from "evae-conscious-loop";
+
+const result = await evaluateDecision({
+  intent: "Send payment",
+  possibilities: ["send payment", "ask human", "stop"],
+  policy: {
+    id: "payments",
+    version: "1.0",
+    rules: [
+      {
+        id: "payment-approval",
+        description: "Payment requires approval evidence",
+        appliesTo: ["send_payment"],
+        check: ({ intent, possibility }) => ({
+          decision: "HOLD",
+          reason: "Approval evidence is missing",
+          requirements: ["human_approval"],
+        }),
+      },
+    ],
+  },
+  decisionContext: {
+    authority: { actor: "agent", scope: "draft-only" },
+    evidence: { approval_id: null },
+  },
+});
+
+console.log(result.decision); // "HOLD"
+console.log(result.requirements); // ["human_approval"]
+```
+
+### Decision semantics
+
+- **EXECUTE** — the selected possibility is authorized for downstream execution.
+- **HOLD** — the possibility is not prohibited, but authority, evidence, confidence, or human review is incomplete.
+- **BLOCK** — the possibility is explicitly outside the permitted decision boundary.
+
+Rules fail closed: a rule error becomes **BLOCK** by default. A rule may explicitly set `onError: "HOLD"` only when that uncertainty is safe to route to review. If no rule applies, the default is **HOLD**, not EXECUTE.
+
+### Responsibility boundary
+
+EVΛƎ decides whether a possibility should become an authorized action and records why. It does **not** execute the action, sandbox the agent, restrict networks/filesystems, or provide hardware/runtime enforcement. Those controls belong downstream and can consume the EVΛƎ decision.
+
+> EVΛƎ decides. Enforcement systems enforce. Ǝ traces.
+
+
+### Authorization handoff contract
+
+For downstream enforcement, `authorization` records the policy id/version, canonical `subject` binding, issue time, optional expiry, all candidate outcomes, authority/evidence context, and requirements. An enforcement layer should execute only when `authorization.status === "EXECUTE"`, `trace.decision` matches the intended possibility, the policy id/version is the expected version, the authorization is unexpired, and the action reconstructed by the enforcer matches the recorded subject. For production policies, set a short `ttlMs`; an authorization without `expires_at` should not be treated as indefinitely reusable.
+
+Preference semantics are deliberate: the first non-BLOCK possibility wins. Therefore a preferred HOLD is not silently bypassed by a later EXECUTE candidate; the caller must resolve or replace the held possibility explicitly.
+
+
+## Patent status
+
+The EVΛƎ Framework is the subject of **Japanese Patent Application No. 2025-160873**, filed on **September 28, 2025**.
+
+This notice identifies the patent-pending status of the underlying EVΛƎ Framework. It does not state that every component, API, or implementation in this open-source package is independently covered by the pending application.
+
+
+### Fail-closed invariant
+
+`EXECUTE` can only be produced when at least one applicable rule is evaluated and the applicable rule set resolves to EXECUTE. Missing rules never imply permission. `defaultDecision` and rule-error fallbacks accept only HOLD or BLOCK; unsafe runtime values are rejected.
+
+Legacy `run()` traces retain schema 0.1. In v0.2 authorization traces, `decision_boundary.within` describes candidates whose rules resolve to EXECUTE, while `trace.decision` is populated only when the selected preferred candidate itself is authorized for execution. A preferred HOLD is therefore allowed to coexist with later executable candidates in `within`.
+
+If possibility generation throws (including a model/source failure), `evaluateDecision()` rejects and produces no EXECUTE authorization. Callers must treat that failure as non-executable.
