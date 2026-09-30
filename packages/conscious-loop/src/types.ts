@@ -161,7 +161,7 @@ export interface DecisionPolicy {
   version: string;
   rules: DecisionRule[];
   /** Defaults to HOLD when no applicable rule authorizes a possibility. */
-  defaultDecision?: AuthorizationDecision;
+  defaultDecision?: "HOLD" | "BLOCK";
   /** Defaults to BLOCK. */
   onRuleError?: "HOLD" | "BLOCK";
   /** Optional lifetime for downstream authorization binding. */
