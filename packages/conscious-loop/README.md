@@ -316,3 +316,10 @@ EVΛƎ decides whether a possibility should become an authorized action and reco
 For downstream enforcement, `authorization` records the policy id/version, canonical `subject` binding, issue time, optional expiry, all candidate outcomes, authority/evidence context, and requirements. An enforcement layer should execute only when `authorization.status === "EXECUTE"`, `trace.decision` matches the intended possibility, the authorization is unexpired, and the action reconstructed by the enforcer matches the recorded subject.
 
 Preference semantics are deliberate: the first non-BLOCK possibility wins. Therefore a preferred HOLD is not silently bypassed by a later EXECUTE candidate; the caller must resolve or replace the held possibility explicitly.
+
+
+## Patent status
+
+The EVΛƎ Framework is the subject of **Japanese Patent Application No. 2025-160873**, filed on **September 28, 2025**.
+
+This notice identifies the patent-pending status of the underlying EVΛƎ Framework. It does not state that every component, API, or implementation in this open-source package is independently covered by the pending application.
