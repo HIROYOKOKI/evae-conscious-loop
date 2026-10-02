@@ -1,5 +1,18 @@
 # EVΛƎ Conscious Loop
 
+## Λ — Decision Boundary
+
+**The explicit pre-execution authorization boundary between AI-selected action and real-world execution.**
+
+**Capability ≠ Authority.**  
+**Selection ≠ Authorization.**  
+**Authorization ≠ Enforcement.**
+
+`Selected Action Proposal → Λ → Authorization Verdict → Enforcement → Execution`
+
+**Can it? → Capability.**  
+**May it? → Authority.**
+
 Structure an AI decision **before execution**, and keep the reason as data.
 
 ```
